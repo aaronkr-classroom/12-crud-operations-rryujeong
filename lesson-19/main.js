@@ -27,7 +27,9 @@ app.set("port", process.env.PORT || 3000);
  */
 app.set("view engine", "ejs"); // ejs를 사용하기 위한 애플리케이션 세팅
 app.use(layouts); // layout 모듈 사용을 위한 애플리케이션 세팅
-app.use(express.static("public"));
+// app.use(express.static("public"));
+const path = require("path");
+app.use(express.static(path.join(__dirname, "public")));
 
 /**
  * Listing 12.4 (p. 177)
@@ -40,6 +42,13 @@ app.use(
   })
 );
 app.use(express.json());
+
+/**
+ * Listing 19.3 (p. 280)
+ * new와 create 라우트를 위한 라우터 추가
+ *
+ * @TODO: app.get와 app.post를 router.get과 router.post로 변경할 수 있다
+ */
 
 /**
  * Listing 12.6 (p. 178)
@@ -56,7 +65,15 @@ app.get("/subscribers", subscribersController.getAllSubscribers); // 모든 구�
  * Listing 18.10 (p. 269)
  * userController.js를 위에서 요청
  */
-// @TODO: index 라우트 생성
+app.get("/users", usersController.index, usersController.indexView); // index 라우트 생성
+
+/**
+ * Listing 19.3 (p. 280)
+ * 사용자의 new와 create 라우트 추가
+ */
+/**
+ * @TODO: new, create, redirectView 라우트를 위한 라우터 추가
+ */
 
 /**
  * Listing 12.12 (p. 184)

@@ -15,8 +15,12 @@ const express = require("express"), // express를 요청
  */
 const mongoose = require("mongoose"); // mongoose를 요청
 // 데이터베이스 연결 설정
-mongoose.connect("mongodb://127.0.0.1:27017/ut-nodejs", {
-  useNewUrlParser: true,
+mongoose.connect(
+  "mongodb+srv://ut-node:g32yQmEA7DA7cCTp@ut-node.u13qncj.mongodb.net/?retryWrites=true&w=majority&appName=UT-Node", // 데이터베이스 연결 설정 Atlas 경로 (lesson-15)
+);
+const db = mongoose.connection;
+db.once("open", () => {
+  console.log("Connected to MONGODB!!!");
 });
 
 app.set("port", process.env.PORT || 3000);
@@ -27,9 +31,7 @@ app.set("port", process.env.PORT || 3000);
  */
 app.set("view engine", "ejs"); // ejs를 사용하기 위한 애플리케이션 세팅
 app.use(layouts); // layout 모듈 사용을 위한 애플리케이션 세팅
-// app.use(express.static("public"));
-const path = require("path");
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static("public"));
 
 /**
  * Listing 12.4 (p. 177)
@@ -42,13 +44,6 @@ app.use(
   })
 );
 app.use(express.json());
-
-/**
- * Listing 19.3 (p. 280)
- * new와 create 라우트를 위한 라우터 추가
- *
- * @TODO: app.get와 app.post를 router.get과 router.post로 변경할 수 있다
- */
 
 /**
  * Listing 12.6 (p. 178)
@@ -65,15 +60,11 @@ app.get("/subscribers", subscribersController.getAllSubscribers); // 모든 구�
  * Listing 18.10 (p. 269)
  * userController.js를 위에서 요청
  */
-app.get("/users", usersController.index, usersController.indexView); // index 라우트 생성
-
-/**
- * Listing 19.3 (p. 280)
- * 사용자의 new와 create 라우트 추가
- */
-/**
- * @TODO: new, create, redirectView 라우트를 위한 라우터 추가
- */
+app.get(
+  "/users",                 // 경로 
+  usersController.index,    // DB 요청
+  usersController.indexView // 페이지 렌더링
+); // 모든 사용자를 위한 라우트 추가
 
 /**
  * Listing 12.12 (p. 184)

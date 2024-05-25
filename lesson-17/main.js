@@ -14,8 +14,12 @@ const express = require("express"), // express를 요청
  */
 const mongoose = require("mongoose"); // mongoose를 요청
 // 데이터베이스 연결 설정
-mongoose.connect("mongodb://127.0.0.1:27017/ut-nodejs", {
-  useNewUrlParser: true,
+mongoose.connect(
+  "mongodb+srv://ut-node:g32yQmEA7DA7cCTp@ut-node.u13qncj.mongodb.net/?retryWrites=true&w=majority&appName=UT-Node", // 데이터베이스 연결 설정 Atlas 경로 (lesson-15)
+);
+const db = mongoose.connection;
+db.once("open", () => {
+  console.log("Connected to MONGODB!!!");
 });
 
 app.set("port", process.env.PORT || 3000);
