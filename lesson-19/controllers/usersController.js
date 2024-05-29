@@ -37,9 +37,49 @@ module.exports = {
    * userController.js에 액션 생성 추가
    */
   // 폼의 렌더링을 위한 새로운 액션 추가
-  /**
-   * @TODO: new, create, redirectView 액션을 객체 리터럴로 묶어 익스포트
-   */
+  new: (req, res) => {
+    res.render("users/new");
+  },
+  redirectView: (req,res,next) => {
+    let path = res.locals.redirect;
+    if (path) res.redirect(path);
+    else next();
+    },
+
+  // 사용자를 데이터베이스에 저장하기 위한 create 액션 추가
+  create: (req, res, next) => {
+    let userParams = {
+      name: {
+        first: req.body.first,
+        last: req.body.last,
+      },
+      email: req.body.email,
+      username: req.body.username,
+      password: req.body.password,
+      profileImg: req.body.profileImg,
+    };
+ 
+  
+    // 폼 파라미터로 사용자 생성
+    User.create(userParams)
+    .then((user) => {
+      console.log(`Created user: ${user.name}`);
+      res.locals.redirect = "/users";
+      res.locals.user = user;
+      next();
+    })
+    .catch((error) => {
+      console.log(`Error creating user: ${error.message}`);
+      next(error);
+    });
+  },
+
+  // 분리된 redirectView 액션에서 뷰 렌더링
+  redirectView: (req, res, next) => {
+    let redirectPath = res.locals.redirect;
+    if (redirectPath) res.redirect(redirectPath);
+    else next();
+  },
 
   /**
    * 노트: 구독자 컨트롤러에 new와 create 액션을 추가하는 것은 새로운 CRUD 액션을 맞춰
@@ -51,7 +91,37 @@ module.exports = {
    * Listing 19.7 (p. 285)
    * userController.js에서 특정 사용자에 대한 show 액션 추가
    */
+  show: (req, res, next) => {
+    let userId = req.params.id; // request params로부터 사용자 ID 수집
+    User.findById(userId) // ID로 사용자 찾기
+      .then((user) => {
+        res.locals.user = user; // 응답 객체를 통해 다음 믿들웨어 함수로 사용자 전달
+        next();
+      })
+      .catch((error) => {
+        console.log(`Error fetching user: ${error.message}`);
+        next(error); // 에러를 로깅하고 다음 함수로 전달
+      });
+  },
+
+  // show 뷰의 렌더링
+  showView: (req, res) => {
+    res.render("users/show");
+  },
+
   /**
-   * @TODO: show, showView 액션을 객체 리터럴로 묶어 익스포트
+   * Listing 20.6 (p. 294)
+   * edit와 update 액션 추가
+   */
+  /**
+   * @TODO: edit, update 액션 추가
+   */
+
+  /**
+   * Listing 20.9 (p. 298)
+   * delete 액션의 추가
+   */
+  /**
+   * @TODO: delete 액션 추가
    */
 };
